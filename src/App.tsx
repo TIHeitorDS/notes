@@ -63,7 +63,7 @@ export function App() {
         <input
           type="text"
           placeholder="Busque em suas anotações..."
-          className="w-full bg-transparent text-3xl font-semibold tracking-tight outline-none placeholder:text-slate-500"
+          className="w-full bg-transparent text-3xl font-semibold text-slate-400 tracking-tight outline-none placeholder:text-slate-500"
           onChange={onSearchNote}
         />
       </form>
@@ -74,7 +74,9 @@ export function App() {
         <NewNoteCard onNoteCreated={onNoteCreated} />
 
         {filteredNotes.map((note) => {
-          return <NoteCard key={note.id} note={note} onDeleteNote={onDeleteNote} />;
+          return (
+            <NoteCard key={note.id} note={note} onDeleteNote={onDeleteNote} />
+          );
         })}
       </div>
     </div>
