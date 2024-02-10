@@ -7,9 +7,12 @@ interface NewNoteCardProps {
   onNoteCreated: (content: string) => void;
 }
 
+let speechRecognition: SpeechRecognition | null = null;
+
 export function NewNoteCard({ onNoteCreated }: NewNoteCardProps) {
   const [shouldShowOnboarding, setShouldShowOnboarding] = useState(true);
   const [content, setContent] = useState("");
+  const [isRecording, setIsRecording] = useState(false);
 
   function handleStartEditor() {
     setShouldShowOnboarding(false);
@@ -23,14 +26,62 @@ export function NewNoteCard({ onNoteCreated }: NewNoteCardProps) {
     }
   }
 
-  function handleSubmitContent(event: FormEvent) {
+  function handleSaveNote(event: FormEvent) {
     event.preventDefault();
+
+    if (content == "") return;
 
     onNoteCreated(content);
     setContent("");
     setShouldShowOnboarding(true);
 
     toast.success("Nota adicionada com sucesso!");
+  }
+
+  function handleStartRecording() {
+    const isSpeechRecognitionAPIAvaliable =
+      "SpeechRecognition" in window || "webkitSpeechRecognition" in window;
+
+    if (!isSpeechRecognitionAPIAvaliable) {
+      alert("Infelizmente seu navegador não suporta gravação de áudio!");
+
+      return;
+    }
+
+    setIsRecording(true);
+    setShouldShowOnboarding(false);
+
+    const SpeechRecognitionAPI =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    speechRecognition = new SpeechRecognitionAPI();
+
+    speechRecognition.lang = "pt-BR";
+    speechRecognition.continuous = true;
+    speechRecognition.maxAlternatives = 1;
+    speechRecognition.interimResults = true;
+
+    speechRecognition.onresult = (event) => {
+      const transcription = Array.from(event.results).reduce((text, result) => {
+        return text.concat(result[0].transcript);
+      }, "");
+
+      setContent(transcription);
+    };
+
+    speechRecognition.onerror = (event) => {
+      console.error(event);
+    };
+
+    speechRecognition.start();
+  }
+
+  function handleStopRecording() {
+    setIsRecording(false);
+
+    if (speechRecognition != null) {
+      speechRecognition.stop();
+    }
   }
 
   return (
@@ -54,7 +105,7 @@ export function NewNoteCard({ onNoteCreated }: NewNoteCardProps) {
             <X className="size-5" />
           </Dialog.Close>
 
-          <form onSubmit={handleSubmitContent} className="flex flex-col flex-1">
+          <form className="flex flex-col flex-1">
             <div className="flex flex-col flex-1 gap-3 p-5">
               <span className="text-sm font-medium text-slate-300">
                 Adicionar nota
@@ -63,13 +114,18 @@ export function NewNoteCard({ onNoteCreated }: NewNoteCardProps) {
               {shouldShowOnboarding ? (
                 <p className="text-slate-400 text-sm leading-6">
                   Comece{" "}
-                  <button className="text-lime-400 hover:underline">
+                  <button
+                    type="button"
+                    className="text-lime-400 hover:underline"
+                    onClick={handleStartRecording}
+                  >
                     gravando uma nota
                   </button>{" "}
                   em áudio ou se preferir{" "}
                   <button
-                    onClick={handleStartEditor}
+                    type="button"
                     className="text-lime-400 hover:underline"
+                    onClick={handleStartEditor}
                   >
                     utilize apenas texto
                   </button>
@@ -79,18 +135,30 @@ export function NewNoteCard({ onNoteCreated }: NewNoteCardProps) {
                 <textarea
                   autoFocus
                   className="bg-transparent text-sm leading-6 flex-1 resize-none outline-none text-slate-400"
-                  onChange={handleContentChanged}
                   value={content}
+                  onChange={handleContentChanged}
                 />
               )}
             </div>
 
-            <button
-              type="submit"
-              className="bg-lime-400 text-[#1A2E05] py-4 text-center text-sm outline-none group font-semibold hover:bg-lime-500"
-            >
-              Salvar nota
-            </button>
+            {isRecording ? (
+              <button
+                type="button"
+                className="flex items-center justify-center gap-3 bg-slate-800 text-slate-50 py-4 text-center text-sm outline-none group font-semibold hover:underline"
+                onClick={handleStopRecording}
+              >
+                <div className="size-3 rounded-full bg-red-500 animate-pulse" />
+                Gravando! (clique p/ interromper)
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="bg-lime-400 text-[#1A2E05] py-4 text-center text-sm outline-none group font-semibold hover:bg-lime-500"
+                onClick={handleSaveNote}
+              >
+                Salvar nota
+              </button>
+            )}
           </form>
         </Dialog.Content>
       </Dialog.Portal>

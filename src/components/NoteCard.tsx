@@ -22,7 +22,9 @@ export function NoteCard({ note }: NoteCardProps) {
           })}
         </span>
 
-        <p className="text-sm leading-6 text-slate-400">{note.content}</p>
+        <p className="text-sm text-left leading-6 text-slate-400">
+          {note.content}
+        </p>
 
         <div className="absolute bottom-0 right-0 left-0 h-1/2 bg-gradient-to-t from-black/60 to-black/0 pointer-events-none" />
       </Dialog.Trigger>
