@@ -6,12 +6,15 @@ import { X } from "lucide-react";
 // tipando um objeto sepadarademente com o interaface
 interface NoteCardProps {
   note: {
+    id: string;
     date: Date;
     content: String;
   };
+
+  onDeleteNote: (id: string) => void;
 }
 
-export function NoteCard({ note }: NoteCardProps) {
+export function NoteCard({ note, onDeleteNote }: NoteCardProps) {
   return (
     <Dialog.Root>
       <Dialog.Trigger className="rounded-md bg-slate-800 flex flex-col p-5 gap-3 overflow-hidden relative hover:ring-2 hover:ring-slate-600 outline-none focus-visible:ring-2 focus-visible:ring-lime-600">
@@ -31,7 +34,7 @@ export function NoteCard({ note }: NoteCardProps) {
 
       <Dialog.Portal>
         <Dialog.Overlay className="inset-0 fixed bg-black/80" />
-        <Dialog.Content className="fixed bg-slate-700 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[640px] w-full h-full max-h-[600px] rounded-md flex flex-col outline-none overflow-hidden">
+        <Dialog.Content className="fixed bg-slate-700 inset-0 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:max-w-[640px] w-full h-full md:max-h-[600px] md:rounded-md flex flex-col outline-none overflow-hidden">
           <Dialog.Close className="bg-slate-800 absolute right-0 top-0 p-1.5 text-slate-500 hover:text-slate-100">
             <X className="size-5" />
           </Dialog.Close>
@@ -50,6 +53,7 @@ export function NoteCard({ note }: NoteCardProps) {
           <button
             type="button"
             className="bg-slate-800 text-white py-4 text-center text-sm outline-none group"
+            onClick={() => onDeleteNote(note.id)}
           >
             Deseja{" "}
             <span className="text-red-400 group-hover:underline">

@@ -100,7 +100,7 @@ export function NewNoteCard({ onNoteCreated }: NewNoteCardProps) {
       <Dialog.Portal>
         <Dialog.Overlay className="inset-0 fixed bg-black/80" />
 
-        <Dialog.Content className="fixed bg-slate-700 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[640px] w-full h-full max-h-[600px] rounded-md flex flex-col outline-none overflow-hidden">
+        <Dialog.Content className="fixed bg-slate-700 inset-0 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:max-w-[640px] w-full h-full md:max-h-[600px] md:rounded-md flex flex-col outline-none overflow-hidden">
           <Dialog.Close className="bg-slate-800 absolute right-0 top-0 p-1.5 text-slate-500 hover:text-slate-100">
             <X className="size-5" />
           </Dialog.Close>
